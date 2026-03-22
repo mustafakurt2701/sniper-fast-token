@@ -9,6 +9,8 @@ export interface AppConfig {
   min5mSells: number;
   min5mVolumeUsd: number;
   max5mPriceDropPct: number;
+  maxPairAgeMinutes: number;
+  latestProfilesLimit: number;
   maxScamScore: number;
   minRiskPassCount: number;
   webhookUrls: string[];
@@ -66,6 +68,8 @@ export const appConfig = (): { app: AppConfig } => ({
     min5mSells: readNumber('MIN_5M_SELLS', 0),
     min5mVolumeUsd: readNumber('MIN_5M_VOLUME_USD', 12000),
     max5mPriceDropPct: readNumber('MAX_5M_PRICE_DROP_PCT', 15),
+    maxPairAgeMinutes: readNumber('MAX_PAIR_AGE_MINUTES', 180),
+    latestProfilesLimit: readNumber('LATEST_PROFILES_LIMIT', 40),
     maxScamScore: readNumber('MAX_SCAM_SCORE', 45),
     minRiskPassCount: readNumber('MIN_RISK_PASS_COUNT', 5),
     webhookUrls: readCsv('WEBHOOK_URLS', []),

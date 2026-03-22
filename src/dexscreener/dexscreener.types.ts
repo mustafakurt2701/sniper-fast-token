@@ -3,6 +3,20 @@ export interface DexscreenerSearchResponse {
   pairs?: DexscreenerPair[];
 }
 
+export interface DexscreenerTokenProfile {
+  chainId: string;
+  tokenAddress: string;
+  url?: string;
+  icon?: string;
+  header?: string;
+  description?: string;
+  links?: Array<{
+    type?: string;
+    label?: string;
+    url?: string;
+  }>;
+}
+
 export interface DexscreenerPair {
   chainId: string;
   dexId: string;

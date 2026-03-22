@@ -117,9 +117,17 @@ export class SignalsService implements OnModuleInit {
   }
 
   private async collectCandidates(): Promise<CandidateSignal[]> {
-    const queries = this.buildQueries();
-    const allPairs = await Promise.all(queries.map((query) => this.dexscreenerService.searchPairs(query)));
+    const latestProfiles = await this.dexscreenerService.getLatestTokenProfiles();
+    const profiles = latestProfiles
+      .filter((profile) => this.config.chainIds.includes(profile.chainId))
+      .slice(0, this.config.latestProfilesLimit);
+    const allPairs = await Promise.all(
+      profiles.map((profile) =>
+        this.dexscreenerService.getTokenPairs(profile.chainId, profile.tokenAddress),
+      ),
+    );
     const uniquePairs = new Map<string, DexscreenerPair>();
+    const now = Date.now();
 
     for (const batch of allPairs) {
       for (const pair of batch) {
@@ -129,6 +137,14 @@ export class SignalsService implements OnModuleInit {
 
     return Array.from(uniquePairs.values())
       .filter((pair) => this.config.chainIds.includes(pair.chainId))
+      .filter((pair) => {
+        if (!pair.pairCreatedAt) {
+          return false;
+        }
+
+        const pairAgeMinutes = Math.max(0, Math.floor((now - pair.pairCreatedAt) / 60000));
+        return pairAgeMinutes <= this.config.maxPairAgeMinutes;
+      })
       .map((pair) => ({
         pair,
         progress: this.scamFilterService.estimateProgress(pair),
@@ -137,19 +153,6 @@ export class SignalsService implements OnModuleInit {
       .filter((candidate) => candidate.momentumScore > 25)
       .sort((left, right) => right.momentumScore - left.momentumScore)
       .slice(0, 20);
-  }
-
-  private buildQueries(): string[] {
-    return [
-      'pump',
-      'moon',
-      'meme',
-      'sol',
-      'doge',
-      'cat',
-      'ai',
-      'pepe',
-    ];
   }
 
   private toPayload(
