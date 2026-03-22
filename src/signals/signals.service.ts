@@ -116,6 +116,27 @@ export class SignalsService implements OnModuleInit {
     return payload;
   }
 
+  async sendTestSignal(query = 'sol'): Promise<SignalPayload | null> {
+    const normalizedQuery = query.trim() || 'sol';
+    const pairs = await this.dexscreenerService.searchPairs(normalizedQuery);
+    const pair = pairs.find((item) => this.config.chainIds.includes(item.chainId)) ?? pairs[0];
+
+    if (!pair) {
+      return null;
+    }
+
+    const candidate: CandidateSignal = {
+      pair,
+      progress: this.scamFilterService.estimateProgress(pair),
+      momentumScore: this.scamFilterService.computeMomentumScore(pair),
+    };
+    const assessment = await this.scamFilterService.assess(candidate);
+    const payload = this.toPayload(candidate, assessment);
+
+    await this.telegramService.sendSignal(payload);
+    return payload;
+  }
+
   private async collectCandidates(): Promise<CandidateSignal[]> {
     const queries = this.buildQueries();
     const allPairs = await Promise.all(queries.map((query) => this.dexscreenerService.searchPairs(query)));
