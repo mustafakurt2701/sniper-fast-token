@@ -50,6 +50,8 @@ export interface DexscreenerPair {
   };
   info?: {
     imageUrl?: string;
+    header?: string;
+    description?: string;
     websites?: Array<{ label?: string; url?: string }>;
     socials?: Array<{ type?: string; url?: string }>;
   };

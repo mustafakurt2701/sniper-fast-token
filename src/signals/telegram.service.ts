@@ -45,18 +45,40 @@ export class TelegramService {
 
   private formatMessage(payload: SignalPayload): string {
     const lines = [
-      '<b>BUY SIGNAL</b>',
+      '<b>EVENT-DRIVEN SIGNAL</b>',
       '',
+      `<b>Signal Type:</b> ${this.escape(payload.signalType)}`,
+      ...(payload.matchedEvent
+        ? [
+            `<b>Event:</b> ${this.escape(payload.matchedEvent.title)}`,
+            `<b>Category:</b> ${this.escape(payload.matchedEvent.category)}`,
+          ]
+        : ['<b>Event:</b> No strong live event match']),
       `<b>Token:</b> ${this.escape(payload.symbol)} (${this.escape(payload.name)})`,
+      `<b>Contract:</b> <code>${this.escape(payload.tokenAddress)}</code>`,
       `<b>Chain:</b> ${this.escape(payload.chainId)}`,
-      `<b>Progress:</b> ${payload.progress}%`,
-      `<b>Momentum:</b> ${payload.momentumScore}`,
-      `<b>Scam Score:</b> ${payload.scamScore}`,
+      `<b>Pair Age:</b> ${payload.metrics.pairAgeMinutes ?? 'unknown'} min`,
       `<b>Liquidity:</b> $${this.formatNumber(payload.metrics.liquidityUsd)}`,
+      `<b>Volume 1m / 5m:</b> $${this.formatNumber(payload.metrics.volume1mUsd)} / $${this.formatNumber(payload.metrics.volume5mUsd)}`,
       `<b>Volume 5m:</b> $${this.formatNumber(payload.metrics.volume5mUsd)}`,
       `<b>Buys/Sells 5m:</b> ${payload.metrics.buys5m}/${payload.metrics.sells5m}`,
-      `<b>Price Change 5m:</b> ${payload.metrics.priceChange5mPct}%`,
+      `<b>Event Match Score:</b> ${payload.eventMatchScore}`,
+      `<b>Social Confirmation:</b> ${payload.tokenSocialScore}`,
+      `<b>Dex Score:</b> ${payload.dexScore}`,
+      `<b>Freshness Score:</b> ${payload.freshnessScore}`,
+      `<b>Final Score:</b> ${payload.finalScore}`,
+      `<b>Scam Score:</b> ${payload.scamScore}`,
     ];
+
+    if (payload.reasonCodes.length > 0) {
+      lines.push('', '<b>Why Detected:</b>');
+      lines.push(...payload.reasonCodes.slice(0, 6).map((reason) => `- ${this.escape(reason)}`));
+    }
+
+    if (payload.riskNotes.length > 0) {
+      lines.push('', '<b>Risk Notes:</b>');
+      lines.push(...payload.riskNotes.slice(0, 5).map((reason) => `- ${this.escape(reason)}`));
+    }
 
     if (payload.metrics.topHolderPct !== undefined) {
       lines.push(`<b>Top Holder:</b> ${payload.metrics.topHolderPct}%`);
