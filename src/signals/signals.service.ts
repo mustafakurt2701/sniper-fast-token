@@ -12,7 +12,6 @@ import { TokenEnrichmentService } from '../token/token-enrichment.service';
 import { ScamFilterService } from './scam-filter.service';
 import { CandidateSignal, SignalPayload, SignalType } from './signal.types';
 import { TelegramService } from './telegram.service';
-import { WebhookService } from './webhook.service';
 
 const ALERT_SIGNAL_TYPES = new Set<SignalType>([
   'BREAKING_EVENT_TOKEN',
@@ -37,7 +36,6 @@ export class SignalsService implements OnModuleInit {
     private readonly socialPostService: SocialPostService,
     private readonly tokenEnrichmentService: TokenEnrichmentService,
     private readonly scamFilterService: ScamFilterService,
-    private readonly webhookService: WebhookService,
     private readonly telegramService: TelegramService,
   ) {
     this.config = this.configService.getOrThrow<AppConfig>('app');
@@ -72,10 +70,7 @@ export class SignalsService implements OnModuleInit {
           continue;
         }
 
-        await Promise.all([
-          this.webhookService.dispatch(payload),
-          this.telegramService.sendSignal(payload),
-        ]);
+        await this.telegramService.sendSignal(payload);
         alerts.push(payload);
         this.sentSignalKeys.set(dedupeKey, Date.now());
       }
@@ -103,10 +98,7 @@ export class SignalsService implements OnModuleInit {
       return null;
     }
 
-    await Promise.all([
-      this.webhookService.dispatch(payload),
-      this.telegramService.sendSignal(payload),
-    ]);
+    await this.telegramService.sendSignal(payload);
     this.sentSignalKeys.set(dedupeKey, Date.now());
     return payload;
   }

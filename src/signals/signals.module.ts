@@ -8,11 +8,10 @@ import { SignalsController } from './signals.controller';
 import { SignalsService } from './signals.service';
 import { ScamFilterService } from './scam-filter.service';
 import { TelegramService } from './telegram.service';
-import { WebhookService } from './webhook.service';
 
 @Module({
   imports: [HttpModule, DexscreenerModule, ChainRiskModule, EventModule, TokenModule],
   controllers: [SignalsController],
-  providers: [SignalsService, ScamFilterService, WebhookService, TelegramService],
+  providers: [SignalsService, ScamFilterService, TelegramService],
 })
 export class SignalsModule {}
