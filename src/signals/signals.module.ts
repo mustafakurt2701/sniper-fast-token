@@ -5,11 +5,12 @@ import { ChainRiskModule } from './chain-risk.module';
 import { SignalsController } from './signals.controller';
 import { SignalsService } from './signals.service';
 import { ScamFilterService } from './scam-filter.service';
+import { TelegramService } from './telegram.service';
 import { WebhookService } from './webhook.service';
 
 @Module({
   imports: [HttpModule, DexscreenerModule, ChainRiskModule],
   controllers: [SignalsController],
-  providers: [SignalsService, ScamFilterService, WebhookService],
+  providers: [SignalsService, ScamFilterService, WebhookService, TelegramService],
 })
 export class SignalsModule {}

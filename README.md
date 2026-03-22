@@ -9,7 +9,7 @@ Scam filtreli, `progress` odakli aday token tarayan ve uygun sinyalleri webhook 
 - `progress` degeri dogrudan resmi API'de acik olmadigi icin market cap veya FDV uzerinden yaklasik tahmin eder.
 - Likidite, 5 dakikalik buy/sell baskisi, hacim, fiyat stabilitesi, pair yasi, boost anomalisi ve proje izi gibi kontrollerden scam skoru uretir.
 - Solana icin ek olarak mint authority, freeze authority, top holder ve top 5 holder yogunlugunu RPC uzerinden kontrol eder.
-- Esikleri gecen tokenlari webhook URL'lerine gonderir.
+- Esikleri gecen tokenlari webhook URL'lerine ve istenirse Telegram botuna gonderir.
 
 ## Endpointler
 
@@ -104,6 +104,7 @@ npm run start:dev
 ## Notlar
 
 - Bu servis execution yapmaz; sadece sinyal uretir ve webhook dispatch eder.
+- Telegram gonderimi icin `TELEGRAM_BOT_TOKEN` ve `TELEGRAM_CHAT_ID` tanimlayin. Bos birakirsan Telegram dispatch kapali kalir.
 - `progress` burada tahmini bir metriktir. Kullandiginiz launchpad'e gore graduation esigini degistirmeniz gerekir.
 - Solana filtreleri icin `SOLANA_RPC_URL`, `SOLANA_MAX_TOP_HOLDER_PCT`, `SOLANA_MAX_TOP5_HOLDER_PCT` ve `SOLANA_REQUIRE_RENOUNCED_AUTHORITIES` ayarlarini `.env` icinde duzenleyin.
 - Scam orani dusurulur ama sifirlanmaz. Hala eksik kalan en kritik veri swap-level honeypot/sell testidir; bu daha sonra chain-specific executor simulasyonu ile eklenebilir.

@@ -5,6 +5,7 @@ import { DexscreenerService } from '../dexscreener/dexscreener.service';
 import { DexscreenerPair } from '../dexscreener/dexscreener.types';
 import { ScamFilterService } from './scam-filter.service';
 import { CandidateSignal, SignalPayload } from './signal.types';
+import { TelegramService } from './telegram.service';
 import { WebhookService } from './webhook.service';
 
 @Injectable()
@@ -20,6 +21,7 @@ export class SignalsService implements OnModuleInit {
     private readonly dexscreenerService: DexscreenerService,
     private readonly scamFilterService: ScamFilterService,
     private readonly webhookService: WebhookService,
+    private readonly telegramService: TelegramService,
   ) {
     this.config = this.configService.getOrThrow<AppConfig>('app');
   }
@@ -55,7 +57,10 @@ export class SignalsService implements OnModuleInit {
           continue;
         }
 
-        await this.webhookService.dispatch(payload);
+        await Promise.all([
+          this.webhookService.dispatch(payload),
+          this.telegramService.sendSignal(payload),
+        ]);
         approvedSignals.push(payload);
         this.sentSignalKeys.set(dedupeKey, Date.now());
       }
@@ -103,7 +108,10 @@ export class SignalsService implements OnModuleInit {
       return null;
     }
 
-    await this.webhookService.dispatch(payload);
+    await Promise.all([
+      this.webhookService.dispatch(payload),
+      this.telegramService.sendSignal(payload),
+    ]);
     this.sentSignalKeys.set(dedupeKey, Date.now());
     return payload;
   }

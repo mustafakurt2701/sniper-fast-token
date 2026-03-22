@@ -18,6 +18,9 @@ export interface AppConfig {
   solanaMaxTopHolderPct: number;
   solanaMaxTop5HolderPct: number;
   solanaRequireRenouncedAuthorities: boolean;
+  telegramBotToken?: string;
+  telegramChatId?: string;
+  telegramParseMode: string;
 }
 
 const readNumber = (key: string, fallback: number): number => {
@@ -75,5 +78,8 @@ export const appConfig = (): { app: AppConfig } => ({
       'SOLANA_REQUIRE_RENOUNCED_AUTHORITIES',
       true,
     ),
+    telegramBotToken: process.env.TELEGRAM_BOT_TOKEN,
+    telegramChatId: process.env.TELEGRAM_CHAT_ID,
+    telegramParseMode: process.env.TELEGRAM_PARSE_MODE ?? 'HTML',
   },
 });
