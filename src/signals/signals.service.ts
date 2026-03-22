@@ -47,20 +47,20 @@ export class SignalsService implements OnModuleInit {
 
       for (const candidate of candidates) {
         const assessment = await this.scamFilterService.assess(candidate);
+        const payload = this.toPayload(candidate, assessment);
+
+        await this.telegramService.sendSignal(payload);
+
         if (!assessment.approved) {
           continue;
         }
 
-        const payload = this.toPayload(candidate, assessment);
         const dedupeKey = `${payload.chainId}:${payload.pairAddress}:${payload.progress}`;
         if (this.shouldSkipSignal(dedupeKey)) {
           continue;
         }
 
-        await Promise.all([
-          this.webhookService.dispatch(payload),
-          this.telegramService.sendSignal(payload),
-        ]);
+        await this.webhookService.dispatch(payload);
         approvedSignals.push(payload);
         this.sentSignalKeys.set(dedupeKey, Date.now());
       }
